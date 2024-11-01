@@ -7,6 +7,8 @@ from django.contrib.auth import login
 import json
 from .models import UserProfile, CurrencyAlert
 from .forms import UserProfileForm, SignUpForm
+from django.conf import settings
+
 
 def signup(request):
     if request.method == 'POST':
@@ -50,3 +52,14 @@ def set_alert(request):
         )
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'fail'}, status=400)
+
+def get_exchange_rate(request):
+    # 환율 API URL 및 API 키 (예시: Open Exchange Rates API 사용)
+    api_url = f"https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey={TUwyZMxyTt6XP6rTujYY02UCuSPWDHDb}"
+
+    try:
+        response = requests.get(api_url)
+        data = response.json()
+        return JsonResponse(data)  # Vue에서 이 JSON 응답을 받을 수 있습니다
+    except requests.exceptions.RequestException as e:
+        return JsonResponse({'error': '환율 데이터를 가져오는 중 오류가 발생했습니다.'}, status=500)
